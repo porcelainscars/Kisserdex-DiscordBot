@@ -46,6 +46,8 @@ if TYPE_CHECKING:
 log = logging.getLogger("ballsdex.core.bot")
 http_counter = Histogram("discord_http_requests", "HTTP requests", ["key", "code"])
 
+PACKAGES = ["config", "players", "countryballs", "info", "admin", "trade", "balls"]
+
 
 def owner_check(ctx: commands.Context[BallsDexBot]):
     return ctx.bot.is_owner(ctx.author)
@@ -121,26 +123,15 @@ class BallsDexBot(commands.AutoShardedBot):
     BallsDex Discord bot
     """
 
-    def __init__(
-        self,
-        command_prefix: PrefixType[BallsDexBot],
-        disable_messsage_content: bool = False,
-        dev: bool = False,
-        **options,
-    ):
+    def __init__(self, command_prefix: PrefixType[BallsDexBot], dev: bool = False, **options):
         # An explaination for the used intents
         # guilds: needed for basically anything, the bot needs to know what guilds it has
         # and accordingly enable automatic spawning in the enabled ones
         # guild_messages: spawning is based on messages sent, content is not necessary
         # emojis_and_stickers: DB holds emoji IDs for the balls which are fetched from 3 servers
         intents = discord.Intents(
-            guilds=True,
-            guild_messages=True,
-            emojis_and_stickers=True,
-            message_content=not disable_messsage_content,
+            guilds=True, guild_messages=True, emojis_and_stickers=True, message_content=True
         )
-        if disable_messsage_content:
-            log.warning("Message content disabled, this will make spam detection harder")
 
         if settings.prometheus_enabled:
             trace = aiohttp.TraceConfig()
@@ -302,15 +293,13 @@ class BallsDexBot(commands.AutoShardedBot):
             await self.add_cog(Dev())
 
         loaded_packages = []
-        for package in settings.packages:
-            package_name = package.replace("ballsdex.packages.", "")
-
+        for package in PACKAGES:
             try:
-                await self.load_extension(package)
+                await self.load_extension("ballsdex.packages." + package)
             except Exception:
-                log.error(f"Failed to load package {package_name}", exc_info=True)
+                log.error(f"Failed to load package {package}", exc_info=True)
             else:
-                loaded_packages.append(package_name)
+                loaded_packages.append(package)
         if loaded_packages:
             log.info(f"Packages loaded: {', '.join(loaded_packages)}")
         else:
@@ -327,7 +316,7 @@ class BallsDexBot(commands.AutoShardedBot):
         else:
             log.info("No command to sync.")
 
-        if "ballsdex.packages.admin" in settings.packages:
+        if "admin" in PACKAGES:
             for guild_id in settings.admin_guild_ids:
                 guild = self.get_guild(guild_id)
                 if not guild:
@@ -493,8 +482,8 @@ class BallsDexBot(commands.AutoShardedBot):
         log.error("Unknown error in interaction", exc_info=error)
 
     async def on_error(self, event_method: str, /, *args, **kwargs):
-        formatted_args = ", ".join((repr(x) for x in args))
-        formatted_kwargs = " ".join(f"{x}={y:r}" for x, y in kwargs.items())
+        formatted_args = ", ".join(args)
+        formatted_kwargs = " ".join(f"{x}={y}" for x, y in kwargs.items())
         log.error(
             f"Error in event {event_method}. Args: {formatted_args}. Kwargs: {formatted_kwargs}",
             exc_info=True,

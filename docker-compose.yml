@@ -30,7 +30,7 @@ services:
   admin-panel:
     image: ballsdex
     ports:
-      - "8000:8000"
+      - "8130:8000"
     networks:
       - internal
     environment:
@@ -67,7 +67,7 @@ services:
     restart: always
     user: postgres:postgres
     volumes:
-      - ./pgbackups:/backups
+      - /var/opt/pgbackups:/backups
     depends_on:
       - postgres-db
     networks:

@@ -24,7 +24,6 @@ venv
 # database
 *sqlite3*
 *.rdb
-pgbackups
 
 # static
 static

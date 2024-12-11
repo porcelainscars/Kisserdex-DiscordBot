@@ -100,16 +100,10 @@ class Info(commands.Cog):
                 scopes=self.bot.application.install_params.scopes,
             )
 
-        bot_info = await self.bot.application_info()
-        if bot_info.team:
-            owner = bot_info.team.name
-        else:
-            owner = bot_info.owner
-        owner_credits = "by the team" if bot_info.team else "by"
         dex_credits = (
-            f"This instance is owned {owner_credits} {owner}.\nAn instance of [Ballsdex]"
-            f"({settings.github_link}) by El Laggron and maintained by the Ballsdex Team "
-            f"and community of [contributors]({settings.github_link}/graphs/contributors)."
+            f"This project was created "
+            f"by **El Laggron** and is owned by **porcelainscars**. "
+            "Consider supporting us on [Patreon](https://www.patreon.com/kisserdex)"
         )
         embed.description = (
             f"{' '.join(str(x) for x in balls)}\n"

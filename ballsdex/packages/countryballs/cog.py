@@ -1,15 +1,12 @@
-import importlib
 import logging
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Optional
 
 import discord
 from discord.ext import commands
 from tortoise.exceptions import DoesNotExist
 
 from ballsdex.core.models import GuildConfig
-from ballsdex.packages.countryballs.countryball import CountryBall
-from ballsdex.packages.countryballs.spawn import BaseSpawnManager
-from ballsdex.settings import settings
+from ballsdex.packages.countryballs.spawn import SpawnManager
 
 if TYPE_CHECKING:
     from ballsdex.core.bot import BallsDexBot
@@ -18,18 +15,9 @@ log = logging.getLogger("ballsdex.packages.countryballs")
 
 
 class CountryBallsSpawner(commands.Cog):
-    spawn_manager: BaseSpawnManager
-
     def __init__(self, bot: "BallsDexBot"):
+        self.spawn_manager = SpawnManager()
         self.bot = bot
-        self.cache: dict[int, int] = {}
-
-        module_path, class_name = settings.spawn_manager.rsplit(".", 1)
-        module = importlib.import_module(module_path)
-        spawn_manager = getattr(module, class_name)
-        if not issubclass(spawn_manager, BaseSpawnManager):
-            raise RuntimeError("Your custom spawn manager must inherit from BaseSpawnManager")
-        self.spawn_manager = spawn_manager(bot)
 
     async def load_cache(self):
         i = 0
@@ -38,7 +26,7 @@ class CountryBallsSpawner(commands.Cog):
                 continue
             if not config.spawn_channel:
                 continue
-            self.cache[config.guild_id] = config.spawn_channel
+            self.spawn_manager.cache[config.guild_id] = config.spawn_channel
             i += 1
         grammar = "" if i == 1 else "s"
         log.info(f"Loaded {i} guild{grammar} in cache.")
@@ -50,41 +38,33 @@ class CountryBallsSpawner(commands.Cog):
         guild = message.guild
         if not guild:
             return
-        if guild.id not in self.cache:
+        if guild.id not in self.spawn_manager.cache:
             return
         if guild.id in self.bot.blacklist_guild:
             return
-
-        if await self.spawn_manager.handle_message(message):
-            channel = guild.get_channel(self.cache[guild.id])
-            if not channel:
-                log.warning(f"Lost channel {self.cache[guild.id]} for guild {guild.name}.")
-                del self.cache[guild.id]
-                return
-            ball = await CountryBall.get_random()
-            await ball.spawn(cast(discord.TextChannel, channel))
+        await self.spawn_manager.handle_message(message)
 
     @commands.Cog.listener()
     async def on_ballsdex_settings_change(
         self,
         guild: discord.Guild,
-        channel: discord.TextChannel | None = None,
-        enabled: bool | None = None,
+        channel: Optional[discord.TextChannel] = None,
+        enabled: Optional[bool] = None,
     ):
-        if guild.id not in self.cache:
+        if guild.id not in self.spawn_manager.cache:
             if enabled is False:
                 return  # do nothing
             if channel:
-                self.cache[guild.id] = channel.id
+                self.spawn_manager.cache[guild.id] = channel.id
             else:
                 try:
                     config = await GuildConfig.get(guild_id=guild.id)
                 except DoesNotExist:
                     return
                 else:
-                    self.cache[guild.id] = config.spawn_channel
+                    self.spawn_manager.cache[guild.id] = config.spawn_channel
         else:
             if enabled is False:
-                del self.cache[guild.id]
+                del self.spawn_manager.cache[guild.id]
             elif channel:
-                self.cache[guild.id] = channel.id
+                self.spawn_manager.cache[guild.id] = channel.id

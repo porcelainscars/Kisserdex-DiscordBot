@@ -1,5 +1,5 @@
 import os
-from typing import Any, List
+from typing import List
 
 from fastapi_admin.app import app
 from fastapi_admin.enums import Method
@@ -161,14 +161,6 @@ class EconomyResource(Model):
     ]
 
 
-class Emoji(displays.Display):
-    async def render(self, request: Request, value: Any):
-        return (
-            f'<img src="https://cdn.discordapp.com/emojis/{value}.png?size=40" '
-            f'title="ID: {value}" />'
-        )
-
-
 @app.register
 class BallResource(Model):
     label = "Ball"
@@ -204,38 +196,32 @@ class BallResource(Model):
         "tradeable",
         Field(
             name="emoji_id",
-            label="Emoji",
-            display=Emoji(),
-            input_=inputs.Input(
-                help_text="Emoji ID of this ball. Application emojis not supported. "
-                "Send \\:emoji-name: on Discord to obtain the ID."
-            ),
+            label="Emoji ID",
         ),
         Field(
             name="wild_card",
             label="Wild card",
             display=displays.Image(width="40"),
-            input_=inputs.Image(
-                upload=upload,
-                null=True,
-                help_text="The file uploaded when this ball spawns. You certify that you have "
-                "the permission from the copyright holder to use this file.",
-            ),
+            input_=inputs.Image(upload=upload, null=True),
         ),
         Field(
             name="collection_card",
             label="Collection card (16:9 ratio)",
             display=displays.Image(width="40"),
-            input_=inputs.Image(
-                upload=upload,
-                null=True,
-                help_text="The image used to generate the collection card. You certify that "
-                "you have the permission from the copyright holder to use this file.",
-            ),
+            input_=inputs.Image(upload=upload, null=True),
         ),
-        "credits",
-        "capacity_name",
-        "capacity_description",
+        Field(
+            name="credits",
+            label="Image credits",
+        ),
+        Field(
+            name="capacity_name",
+            label="Capacity name",
+        ),
+        Field(
+            name="capacity_description",
+            label="Capacity description",
+        ),
     ]
 
     async def get_actions(self, request: Request) -> List[Action]:
@@ -267,6 +253,7 @@ class BallInstanceResource(Model):
         ),
         filters.ForeignKey(model=Ball, name="ball", label="Ball"),
         filters.ForeignKey(model=Special, name="special", label="Special"),
+        filters.Date(name="catch_date", label="Catch date"),
         filters.Boolean(name="shiny", label="Shiny"),
         filters.Boolean(name="favorite", label="Favorite"),
         filters.Search(
@@ -359,7 +346,6 @@ class BlacklistedIDResource(Model):
     fields = [
         "discord_id",
         "reason",
-        "date",
     ]
 
 
@@ -386,5 +372,4 @@ class BlacklistedGuildIDResource(Model):
     fields = [
         "discord_id",
         "reason",
-        "date",
     ]

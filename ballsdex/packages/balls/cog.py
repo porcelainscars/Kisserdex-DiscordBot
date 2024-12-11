@@ -1,4 +1,6 @@
+import enum
 import logging
+from collections import defaultdict
 from typing import TYPE_CHECKING
 
 import discord
@@ -10,7 +12,6 @@ from tortoise.exceptions import DoesNotExist
 from ballsdex.core.models import BallInstance, DonationPolicy, Player, Trade, TradeObject, balls
 from ballsdex.core.utils.buttons import ConfirmChoiceView
 from ballsdex.core.utils.paginator import FieldPageSource, Pages
-from ballsdex.core.utils.sorting import SortingChoices, sort_balls
 from ballsdex.core.utils.transformers import (
     BallEnabledTransform,
     BallInstanceTransform,
@@ -98,6 +99,23 @@ class DonationRequest(View):
         await self.countryball.unlock()
 
 
+class SortingChoices(enum.Enum):
+    alphabetic = "ball__country"
+    catch_date = "-catch_date"
+    rarity = "ball__rarity"
+    special = "special__id"
+    health = "health"
+    attack = "attack"
+    health_bonus = "-health_bonus"
+    attack_bonus = "-attack_bonus"
+    stats_bonus = "stats"
+    total_stats = "total_stats"
+
+    # manual sorts are not sorted by SQL queries but by our code
+    # this may be do-able with SQL still, but I don't have much experience ngl
+    duplicates = "manualsort-duplicates"
+
+
 class Balls(commands.GroupCog, group_name=settings.players_group_cog_name):
     """
     View and manage your countryballs collection.
@@ -161,15 +179,33 @@ class Balls(commands.GroupCog, group_name=settings.players_group_cog_name):
             return
 
         await player.fetch_related("balls")
-        query = player.balls.all()
-        if countryball:
-            query = query.filter(ball__id=countryball.pk)
+        filters = {"ball__id": countryball.pk} if countryball else {}
         if special:
-            query = query.filter(special=special)
+            filters["special"] = special
         if sort:
-            countryballs = await sort_balls(sort, query)
+            if sort == SortingChoices.duplicates:
+                countryballs = await player.balls.filter(**filters)
+                count = defaultdict(int)
+                for ball in countryballs:
+                    count[ball.countryball.pk] += 1
+                countryballs.sort(key=lambda m: (-count[m.countryball.pk], m.countryball.pk))
+            elif sort == SortingChoices.stats_bonus:
+                countryballs = await player.balls.filter(**filters)
+                countryballs.sort(key=lambda x: x.health_bonus + x.attack_bonus, reverse=True)
+            elif sort == SortingChoices.health or sort == SortingChoices.attack:
+                countryballs = await player.balls.filter(**filters)
+                countryballs.sort(key=lambda x: getattr(x, sort.value), reverse=True)
+            elif sort == SortingChoices.total_stats:
+                countryballs = await player.balls.filter(**filters)
+                countryballs.sort(key=lambda x: x.health + x.attack, reverse=True)
+            elif sort == SortingChoices.rarity:
+                countryballs = await player.balls.filter(**filters).order_by(
+                    sort.value, "ball__country"
+                )
+            else:
+                countryballs = await player.balls.filter(**filters).order_by(sort.value)
         else:
-            countryballs = await query.order_by("-favorite", "-shiny")
+            countryballs = await player.balls.filter(**filters).order_by("-favorite", "-shiny")
 
         if len(countryballs) < 1:
             ball_txt = countryball.country if countryball else ""
@@ -548,6 +584,10 @@ class Balls(commands.GroupCog, group_name=settings.players_group_cog_name):
         await countryball.lock_for_trade()
         new_player, _ = await Player.get_or_create(discord_id=user.id)
         old_player = countryball.player
+        cb_txt = (
+            countryball.description(short=True, include_emoji=True, bot=self.bot, is_trade=True)
+            + f" (`{countryball.attack_bonus:+}%/{countryball.health_bonus:+}%`)"
+        )
 
         if new_player == old_player:
             await interaction.followup.send(
@@ -588,7 +628,7 @@ class Balls(commands.GroupCog, group_name=settings.players_group_cog_name):
         elif new_player.donation_policy == DonationPolicy.REQUEST_APPROVAL:
             await interaction.followup.send(
                 f"Hey {user.mention}, {interaction.user.name} wants to give you "
-                f"{countryball.description(include_emoji=True, bot=self.bot, is_trade=True)}!\n"
+                f"{cb_txt}!\n"
                 "Do you accept this donation?",
                 view=DonationRequest(self.bot, interaction, countryball, new_player),
                 allowed_mentions=discord.AllowedMentions(users=new_player.can_be_mentioned),
