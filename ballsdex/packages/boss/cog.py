@@ -92,14 +92,22 @@ class Boss(commands.GroupCog):
         self.attack = False
         self.bossattack = 0
         self.bossball = None
-        self.bosswild = None
+        self.bosswildd = []
+        self.bosswilda = []
         self.disqualified = []
 
     bossadmin = app_commands.Group(name="admin", description="admin commands for boss")
 
     @bossadmin.command(name="start")
     @app_commands.checks.has_any_role(*settings.root_role_ids, *settings.admin_role_ids)
-    async def start(self, interaction: discord.Interaction, ball: BallTransform, hp_amount: int):
+    async def start(
+        self,
+        interaction: discord.Interaction,
+        ball: BallTransform,
+        hp_amount: int,
+        start_image: discord.Attachment | None = None,
+        defend_image: discord.Attachment | None = None,
+        attack_image: discord.Attachment | None = None):
         """
         Start the boss
         """
@@ -109,23 +117,33 @@ class Boss(commands.GroupCog):
         def generate_random_name():
             source = string.ascii_uppercase + string.ascii_lowercase + string.ascii_letters
             return "".join(random.choices(source, k=15))
-        extension = ball.collection_card.split(".")[-1]
-        file_location = "." + ball.collection_card
-        file_name = f"nt_{generate_random_name()}.{extension}"
+        if start_image == None:
+            extension = ball.collection_card.split(".")[-1]
+            file_location = "." + ball.collection_card
+            file_name = f"nt_{generate_random_name()}.{extension}"
+            file=discord.File(file_location, filename=file_name)
+        else:
+            file = await start_image.to_file()
         await interaction.response.send_message(
             f"Boss successfully started", ephemeral=True
         )
-        await interaction.channel.send((f"# The boss battle has begun! {self.bot.get_emoji(ball.emoji_id)}\n-# HP: {self.bossHP}"),file=discord.File(file_location, filename=file_name),)
+        await interaction.channel.send((f"# The boss battle has begun! {self.bot.get_emoji(ball.emoji_id)}\n-# HP: {self.bossHP}"),file=file,)
         await interaction.channel.send("> Use `/boss join` to join the battle!")
         if ball != None:
             self.boss_enabled = True
             self.bossball = ball
-
-            extension = ball.wild_card.split(".")[-1]
-            file_location = "." + ball.wild_card
-            file_name = f"nt_{generate_random_name()}.{extension}"
-            self.bosswild = file=discord.File(file_location, filename=file_name)
-
+            if defend_image == None:
+                self.bosswildd.append(None)
+                self.bosswildd.append(1)
+            else:
+                self.bosswildd.append(defend_image)
+                self.bosswildd.append(2)
+            if attack_image == None:
+                self.bosswilda.append(None)
+                self.bosswilda.append(1)
+            else:
+                self.bosswilda.append(attack_image)
+                self.bosswilda.append(2)
     @bossadmin.command(name="attack")
     @app_commands.checks.has_any_role(*settings.root_role_ids, *settings.admin_role_ids)
     async def attack(self, interaction: discord.Interaction, attack_amount: int | None = None):
@@ -151,8 +169,12 @@ class Boss(commands.GroupCog):
         await interaction.response.send_message(
             f"Round successfully started", ephemeral = True
         )
+        if self.bosswilda[1] == 2: #if custom image
+            file = await self.bosswilda[0].to_file()
+        else:
+            file = discord.File(file_location, filename=file_name)
         await interaction.channel.send(
-            (f"Round {self.round}\n# {self.bossball.country} is preparing to attack! {self.bot.get_emoji(self.bossball.emoji_id)}"),file=discord.File(file_location, filename=file_name)
+            (f"Round {self.round}\n# {self.bossball.country} is preparing to attack! {self.bot.get_emoji(self.bossball.emoji_id)}"),file=file
         )
         await interaction.channel.send(f"> Use `/boss select` to select your defending {settings.collectible_name}.\n> Your selected {settings.collectible_name}'s HP will be used to defend.")
         self.picking = True
@@ -184,8 +206,12 @@ class Boss(commands.GroupCog):
         await interaction.response.send_message(
             f"Round successfully started", ephemeral=True
         )
+        if self.bosswildd[1] == 2: #if custom image
+            file = await self.bosswildd[0].to_file()
+        else:
+            file = discord.File(file_location, filename=file_name
         await interaction.channel.send(
-            (f"Round {self.round}\n# {self.bossball.country} is preparing to defend! {self.bot.get_emoji(self.bossball.emoji_id)}"),file=discord.File(file_location, filename=file_name)
+            (f"Round {self.round}\n# {self.bossball.country} is preparing to defend! {self.bot.get_emoji(self.bossball.emoji_id)}"),file=file
         )
         await interaction.channel.send(f"> Use `/boss select` to select your attacking {settings.collectible_name}.\n> Your selected {settings.collectible_name}'s ATK will be used to attack.")
         self.picking = True
@@ -455,7 +481,24 @@ class Boss(commands.GroupCog):
             else:
                 await interaction.response.send_message(f"You have dealt {ongoingfull} damage and you are now dead.\n{ongoingvalue}",ephemeral=True)
 
-
+@bossadmin.command(name="ping")
+    @app_commands.checks.has_any_role(*settings.root_role_ids, *settings.admin_role_ids)
+    async def ping(self, interaction: discord.Interaction):
+        """
+        Ping all the alive players
+        """
+        if len(self.users) == 0:
+            return await interaction.response.send_message("There are no users joined/remaining",ephemeral=True)
+        pingsmsg = "-#"
+        for userid in self.users:
+            pingsmsg = pingsmsg+" <@"+str(userid)+">"
+        if len(pingsmsg) < 2000:
+            await interaction.response.send_message("Ping Successful")
+            await interaction.channel.send(pingsmsg)
+        else:
+            await interaction.response.send_message("Message too long, exceeds 2000 character limit")
+            
+    
     @bossadmin.command(name="conclude")
     @app_commands.checks.has_any_role(*settings.root_role_ids, *settings.admin_role_ids)
     @app_commands.choices(
@@ -522,10 +565,12 @@ class Boss(commands.GroupCog):
             self.attack = False
             self.bossattack = 0
             self.bossball = None
-            self.bosswild = None
+            self.bosswildd = []
+            self.bosswilda = []
             self.disqualified = []
             return
         if winner != "None":
+            await interaction.response.defer(ephemeral=True, thinking=True)
             player, created = await Player.get_or_create(discord_id=bosswinner)
             special = special = [x for x in specials.values() if x.name == "Boss"][0]
             instance = await BallInstance.create(
@@ -536,7 +581,7 @@ class Boss(commands.GroupCog):
                 attack_bonus=random.randint(-100,1000),
                 health_bonus=random.randint(-100,1000),
             )
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"Boss successfully concluded", ephemeral=True
             )
             await interaction.channel.send(
@@ -566,7 +611,8 @@ class Boss(commands.GroupCog):
         self.attack = False
         self.bossattack = 0
         self.bossball = None
-        self.bosswild = None
+        self.bosswildd = []
+        self.bosswilda = []
         self.disqualified = []
 
     @app_commands.command()
