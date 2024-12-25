@@ -66,9 +66,9 @@ from ballsdex.core.models import (
 
 SHINYBUFFS = [20000,20000] # Shiny Buffs
 # ATK, HP
-MAXSTATS = [154000,96701] # Max stats a card is limited to (before buffs)
+MAXSTATS = [200000,200000] # Max stats a card is limited to (before buffs)
 # ATK, HP
-DAMAGERNG = [10000,154000] # Damage a boss can deal IF attack_amount has NOT been inputted in /boss admin attack.
+DAMAGERNG = [10000,100000] # Damage a boss can deal IF attack_amount has NOT been inputted in /boss admin attack.
 # Min Damage, Max Damage
 
 
