@@ -483,20 +483,20 @@ class Boss(commands.GroupCog):
 
 @bossadmin.command(name="ping")
 @app_commands.checks.has_any_role(*settings.root_role_ids, *settings.admin_role_ids)
-    async def ping(self, interaction: discord.Interaction):
-        """
-        Ping all the alive players
-        """
-        if len(self.users) == 0:
-            return await interaction.response.send_message("There are no users joined/remaining",ephemeral=True)
-        pingsmsg = "-#"
-        for userid in self.users:
-            pingsmsg = pingsmsg+" <@"+str(userid)+">"
-        if len(pingsmsg) < 2000:
-            await interaction.response.send_message("Ping Successful")
-            await interaction.channel.send(pingsmsg)
-        else:
-            await interaction.response.send_message("Message too long, exceeds 2000 character limit")
+async def ping(self, interaction: discord.Interaction):
+    """
+    Ping all the alive players
+    """
+    if len(self.users) == 0:
+        return await interaction.response.send_message("There are no users joined/remaining",ephemeral=True)
+    pingsmsg = "-#"
+    for userid in self.users:
+        pingsmsg = pingsmsg+" <@"+str(userid)+">"
+    if len(pingsmsg) < 2000:
+        await interaction.response.send_message("Ping Successful",ephemeral=True)
+        await interaction.channel.send(pingsmsg)
+    else:
+        await interaction.response.send_message("Message too long, exceeds 2000 character limit")
             
     
     @bossadmin.command(name="conclude")
