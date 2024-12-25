@@ -496,7 +496,7 @@ class Boss(commands.GroupCog):
             await interaction.response.send_message("Ping Successful",ephemeral=True)
             await interaction.channel.send(pingsmsg)
         else:
-            await interaction.response.send_message("Message too long, exceeds 2000 character limit")
+            await interaction.response.send_message("Message too long, exceeds 2000 character limit",ephemeral=True)
             
     
     @bossadmin.command(name="conclude")
