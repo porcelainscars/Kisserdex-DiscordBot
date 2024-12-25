@@ -209,7 +209,7 @@ class Boss(commands.GroupCog):
         if self.bosswildd[1] == 2: #if custom image
             file = await self.bosswildd[0].to_file()
         else:
-            file = discord.File(file_location, filename=file_name
+            file = discord.File(file_location, filename=file_name)
         await interaction.channel.send(
             (f"Round {self.round}\n# {self.bossball.country} is preparing to defend! {self.bot.get_emoji(self.bossball.emoji_id)}"),file=file
         )
