@@ -483,7 +483,7 @@ class Boss(commands.GroupCog):
 
     @bossadmin.command(name="ping")
     @app_commands.checks.has_any_role(*settings.root_role_ids, *settings.admin_role_ids)
-        async def ping(self, interaction: discord.Interaction):
+    async def ping(self, interaction: discord.Interaction):
         """
         Ping all the alive players
         """
