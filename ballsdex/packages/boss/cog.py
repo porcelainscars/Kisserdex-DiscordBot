@@ -482,7 +482,7 @@ class Boss(commands.GroupCog):
                 await interaction.response.send_message(f"You have dealt {ongoingfull} damage and you are now dead.\n{ongoingvalue}",ephemeral=True)
 
 @bossadmin.command(name="ping")
-    @app_commands.checks.has_any_role(*settings.root_role_ids, *settings.admin_role_ids)
+@app_commands.checks.has_any_role(*settings.root_role_ids, *settings.admin_role_ids)
     async def ping(self, interaction: discord.Interaction):
         """
         Ping all the alive players
