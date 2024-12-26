@@ -16,8 +16,7 @@ from ballsdex.core.utils.transformers import BallEnabledTransform
 from ballsdex.core.utils.transformers import SpecialTransform, BallTransform
 from ballsdex.core.utils.transformers import SpecialEnabledTransform
 from ballsdex.core.utils.paginator import FieldPageSource, Pages
-from ballsdex.core.utils.logging import log_action
-from ballsdex.settings import settings
+from ballsdex.core.bot import BallsDexBot
 
 if TYPE_CHECKING:
     from ballsdex.core.bot import BallsDexBot
@@ -71,6 +70,22 @@ MAXSTATS = [200000,200000] # Max stats a card is limited to (before buffs)
 DAMAGERNG = [10000,100000] # Damage a boss can deal IF attack_amount has NOT been inputted in /boss admin attack.
 # Min Damage, Max Damage
 
+LOGCHANNEL = 1320852210556604517
+#Change this if you want to a different channel for boss logs
+#e.g.
+#LOGCHANNEL = 1234567890987654321
+async def log_action(message: str, bot: BallsDexBot, console_log: bool = False):
+    if LOGCHANNEL:
+        channel = bot.get_channel(LOGCHANNEL)
+        if not channel:
+            log.warning(f"Channel {LOGCHANNEL} not found")
+            return
+        if not isinstance(channel, discord.TextChannel):
+            log.warning(f"Channel {channel.name} is not a text channel")  # type: ignore
+            return
+        await channel.send(message)
+    if console_log:
+        log.info(message)
 
 @app_commands.guilds(*settings.admin_guild_ids)
 class Boss(commands.GroupCog):
@@ -103,7 +118,7 @@ class Boss(commands.GroupCog):
     async def start(
         self,
         interaction: discord.Interaction,
-        ball: BallTransform,
+        countryball: BallTransform,
         hp_amount: int,
         start_image: discord.Attachment | None = None,
         defend_image: discord.Attachment | None = None,
@@ -111,6 +126,7 @@ class Boss(commands.GroupCog):
         """
         Start the boss
         """
+        ball = countryball
         if self.boss_enabled == True:
             return await interaction.response.send_message(f"There is already an ongoing boss battle", ephemeral=True)
         self.bossHP = hp_amount
@@ -349,7 +365,7 @@ class Boss(commands.GroupCog):
     async def select(
         self,
         interaction: discord.Interaction,
-        ball: BallInstanceTransform,
+        countryball: BallInstanceTransform,
         special: SpecialEnabledTransform | None = None,
         shiny: bool | None = None,
     ):
@@ -365,6 +381,7 @@ class Boss(commands.GroupCog):
         shiny: bool
             Filter the results of autocompletion to shinies. Ignored afterwards.
         """
+        ball = countryball
         if [int(interaction.user.id),self.round] in self.usersinround:
             return await interaction.response.send_message(
                 f"You have already selected an {settings.collectible_name}", ephemeral=True
@@ -487,16 +504,17 @@ class Boss(commands.GroupCog):
         """
         Ping all the alive players
         """
+        await interaction.response.defer(ephemeral=True, thinking=True)
         if len(self.users) == 0:
-            return await interaction.response.send_message("There are no users joined/remaining",ephemeral=True)
+            return await interaction.followup.send("There are no users joined/remaining",ephemeral=True)
         pingsmsg = "-#"
         for userid in self.users:
             pingsmsg = pingsmsg+" <@"+str(userid)+">"
         if len(pingsmsg) < 2000:
-            await interaction.response.send_message("Ping Successful",ephemeral=True)
+            await interaction.followup.send("Ping Successful",ephemeral=True)
             await interaction.channel.send(pingsmsg)
         else:
-            await interaction.response.send_message("Message too long, exceeds 2000 character limit",ephemeral=True)
+            await interaction.followup.send("Message too long, exceeds 2000 character limit",ephemeral=True)
             
     
     @bossadmin.command(name="conclude")
@@ -595,6 +613,9 @@ class Boss(commands.GroupCog):
                 self.bot,
             )
         else:
+            await interaction.response.send_message(
+                f"Boss successfully concluded", ephemeral=True
+            )
             await interaction.channel.send(f"# Boss has concluded {self.bot.get_emoji(self.bossball.emoji_id)}\nThe boss has been defeated!")
         with open("totalstats.txt", "w") as file:
             file.write(f"{total}{total2}")
