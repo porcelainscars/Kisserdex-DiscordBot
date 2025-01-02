@@ -109,6 +109,7 @@ class SpecialResource(Model):
         "emoji",
         "tradeable",
         "hidden",
+        "credits",
     ]
 
     async def get_actions(self, request: Request) -> List[Action]:
@@ -267,7 +268,6 @@ class BallInstanceResource(Model):
         ),
         filters.ForeignKey(model=Ball, name="ball", label="Ball"),
         filters.ForeignKey(model=Special, name="special", label="Special"),
-        filters.Boolean(name="shiny", label="Shiny"),
         filters.Boolean(name="favorite", label="Favorite"),
         filters.Search(
             name="player__discord_id",
@@ -287,7 +287,6 @@ class BallInstanceResource(Model):
         "player",
         "catch_date",
         "server_id",
-        "shiny",
         "special",
         "favorite",
         "health_bonus",
