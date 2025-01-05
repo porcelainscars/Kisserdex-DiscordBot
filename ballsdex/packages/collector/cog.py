@@ -321,6 +321,11 @@ class Collector(commands.GroupCog):
             if not view.value:
                 return
             for b in ballslist:
+                player = await self.bot.fetch_user(int(f"{b.player}"))
+                try:
+                    await player.send(f"Your {b.ball} {text0} card has been deleted because you no longer have enough{shiny0} {settings.plural_collectible_name} to maintain it.")
+                except:
+                    pass
                 await b.delete()
             if unmetcount == 1:
                 collectiblename1 = settings.collectible_name
