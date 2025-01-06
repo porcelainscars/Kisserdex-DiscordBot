@@ -119,7 +119,7 @@ class Collector(commands.GroupCog):
             )
         else:
             await interaction.followup.send(
-                f"You need {collector_number} {country} to create a collector ball. You currently have {balls}."
+                f"You need {collector_number} {country} to create a collector card. You currently have {balls}."
             )
 
     @app_commands.command()
