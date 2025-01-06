@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 # You must have a special called "Collector" for this to work.
 
 # AMOUNT NEEDED FOR TOP 1 CC BALL e.g. reichtangle
-T1Req = 100
+T1Req = 70
 
 # RARITY OF TOP 1 BALL e.g. reichtangle
 # (If not originally inputted as 1 into admin panel or /admin balls create)
