@@ -201,12 +201,12 @@ class Balls(app_commands.Group):
             attack_bonus=(
                 attack_bonus
                 if attack_bonus is not None
-                else random.randint(-settings.max_attack_bonus, settings.max_attack_bonus)
+                else random.randint(-100, settings.max_attack_bonus)
             ),
             health_bonus=(
                 health_bonus
                 if health_bonus is not None
-                else random.randint(-settings.max_health_bonus, settings.max_health_bonus)
+                else random.randint(-100, settings.max_health_bonus)
             ),
             special=special,
         )
