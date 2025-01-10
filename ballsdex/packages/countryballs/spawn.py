@@ -127,7 +127,7 @@ class SpawnCooldown:
             return False
 
         async with self.lock:
-            message_multiplier = 1
+            message_multiplier = 1 * 3
             if message.guild.member_count < 5 or message.guild.member_count > 1000:  # type: ignore
                 message_multiplier /= 2
             if message._state.intents.message_content and len(message.content) < 5:
