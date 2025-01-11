@@ -25,7 +25,8 @@ from ballsdex.core.utils.logging import log_action
 if TYPE_CHECKING:
     from ballsdex.core.bot import BallsDexBot
 
-# You must have a special called "Collector" for this to work.
+# You must have a special called "Collector" and "Diamond" for this to work.
+# You must be have version 2.22.0 Ballsdex or diamond will not work.
 
 # AMOUNT NEEDED FOR TOP 1 CC BALL e.g. reichtangle
 T1Req = 70
@@ -52,9 +53,18 @@ RoundingOption = 10
 # if T1Req/CommonReq is not divisible by RoundingOption they will be affected.
 # if T1Req is less than RoundingOption it will be rounded down to 0, (That's just how integer conversions work in python unfortunately)
 
+#Same thing but for diamond
+dT1Req = 3
+dT1Rarity = 0.01 # this must be the same as T1Rarity, dont make it different unless you know what you're doing
+dCommonReq = 12
+dCommonRarity = 0.121 # this must be the same as CommonRarity, dont make it different unless you know what you're doing
+dRoundingOption = 1
+
+
 log = logging.getLogger("ballsdex.packages.collector.cog")
 
 gradient = (CommonReq-T1Req)/(CommonRarity-T1Rarity)
+dgradient = (dCommonReq-dT1Req)/(dCommonRarity-dT1Rarity)
 
 class Collector(commands.GroupCog):
     """
@@ -71,6 +81,7 @@ class Collector(commands.GroupCog):
         self,
         interaction: discord.Interaction,
         countryball: BallEnabledTransform,
+        diamond: bool | None = False
         ):
         """
         Create the collector card for a kisser.
@@ -89,25 +100,43 @@ class Collector(commands.GroupCog):
         if countryball:
             filters["ball"] = countryball
         await interaction.response.defer(ephemeral=True, thinking=True)
-        special = [x for x in specials.values() if x.name == "Collector"][0]
+        if diamond:
+            special = [x for x in specials.values() if x.name == "Diamond"][0]
+        else:
+            special = [x for x in specials.values() if x.name == "Collector"][0]
         checkfilter["special"] = special
         checkfilter["player__discord_id"] = interaction.user.id
         checkfilter["ball"] = countryball
         checkcounter = await BallInstance.filter(**checkfilter).count()
         if checkcounter >= 1:
-            return await interaction.followup.send(
-                f"You already have a {countryball.country} collector ball."
-            )
+            if diamond:
+                return await interaction.followup.send(
+                    f"You already have a {countryball.country} diamond card."
+                )
+            else:
+                return await interaction.followup.send(
+                    f"You already have a {countryball.country} collector card."
+                )
         filters["player__discord_id"] = interaction.user.id
+        if diamond:
+            shiny = [x for x in specials.values() if x.name == "Shiny"][0]
+            filters["special"] = shiny
         balls = await BallInstance.filter(**filters).count()
-        
-        collector_number = int(int((gradient*(countryball.rarity-T1Rarity) + T1Req)/RoundingOption)*RoundingOption)
+
+        if diamond:
+            collector_number = int(int((dgradient*(countryball.rarity-dT1Rarity) + dT1Req)/dRoundingOption)*dRoundingOption)
+        else:
+            collector_number = int(int((gradient*(countryball.rarity-T1Rarity) + T1Req)/RoundingOption)*RoundingOption)
 
         country = f"{countryball.country}"
         player, created = await Player.get_or_create(discord_id=interaction.user.id)
         if balls >= collector_number:
+            if diamond:
+                diamondtext = " diamond"
+            else:
+                diamondtext = ""
             await interaction.followup.send(
-                f"Congrats! You are now a {country} collector.", 
+                f"Congratulations! You are now a {country}{diamondtext} collector.", 
                 ephemeral=True
             )
             await BallInstance.create(
@@ -118,12 +147,18 @@ class Collector(commands.GroupCog):
             special=special,
             )
         else:
+            if diamond:
+                text0 = "diamond"
+                shinytext = " Shiny"
+            else:
+                text0 = "collector"
+                shinytext = ""
             await interaction.followup.send(
-                f"You need {collector_number} {country} to create a collector card. You currently have {balls}."
+                f"You need {collector_number}{shinytext} {country} to create a {text0} ball. You currently have {balls}."
             )
 
     @app_commands.command()
-    async def list(self, interaction: discord.Interaction["BallsDexBot"]):
+    async def list(self, interaction: discord.Interaction["BallsDexBot"], diamond: bool | None = False):
         # DO NOT CHANGE THE CREDITS TO THE AUTHOR HERE!
         """
         Display the collector card requirements for each kisser.
@@ -142,7 +177,12 @@ class Collector(commands.GroupCog):
         sorted_collectibles = sorted(enabled_collectibles, key=lambda x: x.rarity)
 
         entries = []
-
+        if diamond:
+            text0 = "Diamond"
+            shinytext = " Shiny"
+        else:
+            text0 = "Collector"
+            shinytext = ""
         for collectible in sorted_collectibles:
             name = f"{collectible.country}"
             emoji = self.bot.get_emoji(collectible.emoji_id)
@@ -151,17 +191,20 @@ class Collector(commands.GroupCog):
                 emote = str(emoji)
             else:
                 emote = "N/A"
-            rarity1 = int(int((gradient*(collectible.rarity-T1Rarity) + T1Req)/RoundingOption)*RoundingOption)
-
-            entry = (name, f"{emote} Amount required: {rarity1}")
+            if diamond:
+                rarity1 = int(int((dgradient*(collectible.rarity-dT1Rarity) + dT1Req)/dRoundingOption)*dRoundingOption)
+            else:
+                rarity1 = int(int((gradient*(collectible.rarity-T1Rarity) + T1Req)/RoundingOption)*RoundingOption)
+            
+            entry = (name, f"{emote}{shinytext} Amount required: {rarity1}")
             entries.append(entry)
         # This is the number of countryballs which are displayed at one page,
         # you can change this, but keep in mind: discord has an embed size limit.
-        per_page = 5
+        per_page = 10
 
         source = FieldPageSource(entries, per_page=per_page, inline=False, clear_description=False)
         source.embed.description = (
-            f"__**{settings.bot_name} Collector Card List**__"
+            f"__**{settings.bot_name} {text0} Card List**__"
         )
         source.embed.colour = discord.Colour.from_rgb(190,100,190)
         source.embed.set_author(
@@ -188,9 +231,10 @@ class Collector(commands.GroupCog):
         option: str,
         countryball: BallTransform | None = None,
         user: discord.User | None = None,
+        diamond: bool | None = False,
     ):
         """
-        Check for unmet collector cards.
+        Check for unmet Collector Cards
         
         Parameters
         ----------
@@ -206,19 +250,31 @@ class Collector(commands.GroupCog):
             if fullperm == False:
                 return await interaction.response.send_message(f"You do not have permission to delete {settings.plural_collectible_name}", ephemeral=True)
         await interaction.response.defer(ephemeral=True, thinking=True)
-        collectorspecial = [x for x in specials.values() if x.name == "Collector"][0]
+        if diamond:
+            collectorspecial = [x for x in specials.values() if x.name == "Diamond"][0]
+        else:
+            collectorspecial = [x for x in specials.values() if x.name == "Collector"][0]
         async def entrycode(ball):
             player = await self.bot.fetch_user(int(f"{ball.player}"))
             checkfilter = {}
             checkfilter["player__discord_id"] = int(f"{ball.player}")
             checkfilter["ball"] = ball.ball
+            if diamond:
+                checkfilter["special"] = [x for x in specials.values() if x.name == "Shiny"][0]
+                shinytext = " Shiny"
+            else:
+                shinytext = ""
             checkballs = await BallInstance.filter(**checkfilter).count()
             if checkballs == 1:
                 collectiblename = settings.collectible_name
             else:
                 collectiblename = settings.plural_collectible_name
-            meetcheck = (f"{player} has **{checkballs}** {ball.ball} {collectiblename}")
-            if checkballs >= int(int((gradient*(ball.ball.rarity-T1Rarity) + T1Req)/RoundingOption)*RoundingOption):
+            meetcheck = (f"{player} has **{checkballs}**{shinytext} {ball.ball} {collectiblename}")
+            if diamond:
+                rarity2 = int(int((dgradient*(ball.ball.rarity-dT1Rarity) + dT1Req)/dRoundingOption)*dRoundingOption)
+            else:
+                rarity2 = int(int((gradient*(ball.ball.rarity-T1Rarity) + T1Req)/RoundingOption)*RoundingOption)
+            if checkballs >= rarity2:
                 meet = (f"**Enough to maintain ✅**\n---")
                 if option == "ALL":
                     entry = (ball.description(short=True, include_emoji=True, bot=self.bot), f"{player}({ball.player})\n{meetcheck}\n{meet}")
@@ -234,9 +290,6 @@ class Collector(commands.GroupCog):
             try:
                 player = await Player.get(discord_id=user_obj.id)
             except DoesNotExist:
-                await interaction.followup.send(
-                    f"{user_obj.name} doesn't have any {settings.plural_collectible_name} yet."
-                )
                 return
             await player.fetch_related("balls")
             query = player.balls.all()
@@ -251,11 +304,6 @@ class Collector(commands.GroupCog):
                     combined = f"{special_txt} {ball_txt}"
                 else:
                     combined = special_txt
-
-                await interaction.followup.send(
-                    f"{user_obj.name} doesn't have any {combined} "
-                    f"{settings.plural_collectible_name} yet."
-                )
                 return
 
             for ball in countryballs:
@@ -299,8 +347,25 @@ class Collector(commands.GroupCog):
                         await entrycode(ball)
                 except DoesNotExist:
                     pass
-        if len(entries) == 0 and user == None:
-            return await interaction.followup.send("No collector cards!")
+        if diamond:
+            text0 = "diamond"
+            shiny0 = " shiny"
+        else:
+            text0 = "collector"
+            shiny0 = ""
+        if len(entries) == 0:
+            if countryball:
+                ctext = (f" {countryball}")
+            else:
+                ctext = ("")
+            if option == "ALL":
+                utext = ("")
+            else:
+                utext = (" unmet")
+            if user == None:
+                return await interaction.followup.send(f"There are no{utext}{ctext} {text0} cards!")
+            else:
+                return await interaction.followup.send(f"{user} has no{utext}{ctext} {text0} cards!")
         if option == "DELETE":
             unmetballs = ""
             for b in ballslist:
@@ -309,31 +374,26 @@ class Collector(commands.GroupCog):
             with open("unmetccs.txt", "w") as file:
                 file.write(unmetballs)
             with open("unmetccs.txt", "rb") as file:
-                await interaction.followup.send(f"The following collector cards will be deleted for no longer having enough {settings.plural_collectible_name} each to maintain them:",file=discord.File(file, "unmetccs.txt"),ephemeral=True)
+                await interaction.followup.send(f"The following {text0} cards will be deleted for no longer having enough{shiny0} {settings.plural_collectible_name} each to maintain them:",file=discord.File(file, "unmetccs.txt"),ephemeral=True)
             view = ConfirmChoiceView(
                 interaction,
                 accept_message=f"Confirmed, deleting...",
                 cancel_message="Request cancelled.",
             )
             unmetcount = len(ballslist)
-            await interaction.followup.send(f"Are you sure you want to delete {unmetcount} collector card(s)?\nThis cannot be undone.",view=view,ephemeral=True)
+            await interaction.followup.send(f"Are you sure you want to delete {unmetcount} {text0} card(s)?\nThis cannot be undone.",view=view,ephemeral=True)
             await view.wait()
             if not view.value:
                 return
             for b in ballslist:
-                player = await self.bot.fetch_user(int(f"{b.player}"))
-                try:
-                    await player.send(f"Your {b.ball} {text0} card has been deleted because you no longer have enough{shiny0} {settings.plural_collectible_name} to maintain it.")
-                except:
-                    pass
                 await b.delete()
             if unmetcount == 1:
                 collectiblename1 = settings.collectible_name
             else:
                 collectiblename1 = settings.plural_collectible_name
-            await interaction.followup.send(f"{unmetcount} collector card {collectiblename1} has been deleted successfully.",ephemeral=True)
+            await interaction.followup.send(f"{unmetcount} {text0} card {collectiblename1} has been deleted successfully.",ephemeral=True)
             await log_action(
-                f"{interaction.user} has deleted {unmetcount} collector card {collectiblename1} for no longer having enough {settings.plural_collectible_name} each to maintain them.",
+                f"{interaction.user} has deleted {unmetcount} {text0} card {collectiblename1} for no longer having enough{shiny0} {settings.plural_collectible_name} each to maintain them.",
                 self.bot,
             )
             return
@@ -341,9 +401,14 @@ class Collector(commands.GroupCog):
             per_page = 5
 
             source = FieldPageSource(entries, per_page=per_page, inline=False, clear_description=False)
-            source.embed.description = (
-                f"__**{settings.bot_name} Collector Card Check**__"
-            )
+            if diamond:
+                source.embed.description = (
+                    f"__**{settings.bot_name} Diamond Card Check**__"
+                )
+            else:
+                source.embed.description = (
+                    f"__**{settings.bot_name} Collector Card Check**__"
+                )
             source.embed.colour = discord.Colour.from_rgb(190,100,190)
 
             pages = Pages(source=source, interaction=interaction, compact=True)
