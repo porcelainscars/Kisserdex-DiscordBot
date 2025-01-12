@@ -249,31 +249,50 @@ class Collector(commands.GroupCog):
                     fullperm = True
             if fullperm == False:
                 return await interaction.response.send_message(f"You do not have permission to delete {settings.plural_collectible_name}", ephemeral=True)
+                
         await interaction.response.defer(ephemeral=True, thinking=True)
+        
         if diamond:
             collectorspecial = [x for x in specials.values() if x.name == "Diamond"][0]
         else:
             collectorspecial = [x for x in specials.values() if x.name == "Collector"][0]
-        async def entrycode(ball):
+            
+        filters = {}
+        filters["special"] = collectorspecial
+        if countryball:
+            filters["ball"] = countryball
+        if user:
+            filters["player__discord_id"] = user.id
+        entries = []
+        unmetlist = []
+        
+        balls = await BallInstance.filter(**filters).prefetch_related(
+                        "player","special","ball"
+                    )
+        for ball in balls:
             player = await self.bot.fetch_user(int(f"{ball.player}"))
             checkfilter = {}
             checkfilter["player__discord_id"] = int(f"{ball.player}")
             checkfilter["ball"] = ball.ball
+            
             if diamond:
                 checkfilter["special"] = [x for x in specials.values() if x.name == "Shiny"][0]
                 shinytext = " Shiny"
             else:
                 shinytext = ""
+                
             checkballs = await BallInstance.filter(**checkfilter).count()
             if checkballs == 1:
                 collectiblename = settings.collectible_name
             else:
                 collectiblename = settings.plural_collectible_name
             meetcheck = (f"{player} has **{checkballs}**{shinytext} {ball.ball} {collectiblename}")
+            
             if diamond:
                 rarity2 = int(int((dgradient*(ball.ball.rarity-dT1Rarity) + dT1Req)/dRoundingOption)*dRoundingOption)
             else:
                 rarity2 = int(int((gradient*(ball.ball.rarity-T1Rarity) + T1Req)/RoundingOption)*RoundingOption)
+                
             if checkballs >= rarity2:
                 meet = (f"**Enough to maintain ✅**\n---")
                 if option == "ALL":
@@ -283,76 +302,15 @@ class Collector(commands.GroupCog):
                 meet = (f"**Not enough to maintain** ⚠️\n---")
                 entry = (ball.description(short=True, include_emoji=True, bot=self.bot), f"{player}({ball.player})\n{meetcheck}\n{meet}")
                 entries.append(entry)
-                if option == "DELETE":
-                    ballslist.append(ball)
-        async def userentrycode():
-            user_obj = user
-            try:
-                player = await Player.get(discord_id=user_obj.id)
-            except DoesNotExist:
-                return
-            await player.fetch_related("balls")
-            query = player.balls.all()
-            query = query.filter(special=collectorspecial)
-            if countryball:
-                query = query.filter(ball__id=countryball.pk)
-            countryballs = await query.order_by("-favorite")
-            if len(countryballs) < 1:
-                ball_txt = countryball.country if countryball else ""
-                special_txt = collectorspecial
-                if ball_txt:
-                    combined = f"{special_txt} {ball_txt}"
-                else:
-                    combined = special_txt
-                return
-
-            for ball in countryballs:
-                ball = await BallInstance.get(id=ball.pk).prefetch_related(
-                        "player","special","ball"
-                )
-                await entrycode(ball)
-        filters = {}
-        filters["special"] = collectorspecial
-        if countryball:
-            filters["ball"] = countryball
-        if user:
-            filters["player__discord_id"] = user.id   
-        ballcount = await BallInstance.filter(**filters).count()
-        count = 0
-        entries = []
-        ballslist = []
-        if user:
-            await userentrycode()
-        elif countryball:
-            while ballcount != 0:
-                try:
-                    count += 1
-                    ball = await BallInstance.get(id=count).prefetch_related(
-                        "player","special","ball"
-                    )
-                    if ball.special == collectorspecial and ball.ball == countryball:
-                        ballcount -= 1
-                        await entrycode(ball)
-                except DoesNotExist:
-                    pass
-        else:
-            while ballcount != 0:
-                try:
-                    count += 1
-                    ball = await BallInstance.get(id=count).prefetch_related(
-                        "player","special","ball"
-                    )
-                    if ball.special == collectorspecial:
-                        ballcount -= 1
-                        await entrycode(ball)
-                except DoesNotExist:
-                    pass
+                unmetlist.append(ball)
+                
         if diamond:
             text0 = "diamond"
             shiny0 = " shiny"
         else:
             text0 = "collector"
             shiny0 = ""
+            
         if len(entries) == 0:
             if countryball:
                 ctext = (f" {countryball}")
@@ -368,7 +326,7 @@ class Collector(commands.GroupCog):
                 return await interaction.followup.send(f"{user} has no{utext}{ctext} {text0} cards!")
         if option == "DELETE":
             unmetballs = ""
-            for b in ballslist:
+            for b in unmetlist:
                 player = await self.bot.fetch_user(int(f"{b.player}"))
                 unmetballs+=(f"{player}'s {b}\n")
             with open("unmetccs.txt", "w") as file:
@@ -380,12 +338,12 @@ class Collector(commands.GroupCog):
                 accept_message=f"Confirmed, deleting...",
                 cancel_message="Request cancelled.",
             )
-            unmetcount = len(ballslist)
+            unmetcount = len(unmetlist)
             await interaction.followup.send(f"Are you sure you want to delete {unmetcount} {text0} card(s)?\nThis cannot be undone.",view=view,ephemeral=True)
             await view.wait()
             if not view.value:
                 return
-            for b in ballslist:
+            for b in unmetlist:
                 await b.delete()
             if unmetcount == 1:
                 collectiblename1 = settings.collectible_name
@@ -397,8 +355,9 @@ class Collector(commands.GroupCog):
                 self.bot,
             )
             return
+            
         else:
-            per_page = 5
+            per_page = 10
 
             source = FieldPageSource(entries, per_page=per_page, inline=False, clear_description=False)
             if diamond:
