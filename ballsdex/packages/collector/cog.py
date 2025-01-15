@@ -154,7 +154,7 @@ class Collector(commands.GroupCog):
                 text0 = "collector"
                 shinytext = ""
             await interaction.followup.send(
-                f"You need {collector_number}{shinytext} {country} to create a {text0} ball. You currently have {balls}."
+                f"You need {collector_number}{shinytext} {country} to create a {text0} card. You currently have {balls}."
             )
 
     @app_commands.command()
