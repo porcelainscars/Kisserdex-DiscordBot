@@ -12,6 +12,7 @@ from ballsdex.settings import settings
 
 log = logging.getLogger("ballsdex.packages.countryballs")
 
+
 class CountryBall:
     def __init__(self, model: Ball):
         self.name = model.country
