@@ -180,7 +180,7 @@ spawnmsglist = [
     "Super silly kissers in your area. Tap to continue.",
     "Getting verified was a sisyphean task.",
     "OGs remember when Kisserdex wasn't verified.",
-    "This kisser will die historic on Fury Road!"
+    "This kisser will die historic on Fury Road!",
     "WHAT A DAY! WHAT A LOVELY DAY!",
     "So shiny, so chrome.",
     "Where do we go, we who wander this wasteland in search of our better selves?",
