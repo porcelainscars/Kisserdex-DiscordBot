@@ -142,7 +142,7 @@ spawnmsglist = [
     "Look in my eyes, how could you NOT catch me?",
     "If you had 2 gummy worms. Would you. ?",
     "We are currently working on a new wave. It should be finished after GTA 6.",
-    "If you haven't caught a Mythic, that's a skill issue.",
+    "If you haven't caught a Fabled, that's a skill issue.",
     "13 Raisins Why",
     "Kisserdex's RKK doesn't exist yet... maybe it will if you ask for it :3",
     "Here is a random sentence in Mandarin: 這個接吻者需要親吻.",
