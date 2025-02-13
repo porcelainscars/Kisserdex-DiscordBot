@@ -50,7 +50,7 @@ class CountryballNamePrompt(Modal, title=f"Catch this {settings.collectible_name
         await interaction.response.defer(thinking=True)
 
         player, _ = await Player.get_or_create(discord_id=interaction.user.id)
-        if self.ball.catched:
+        if self.ball.caught:
             await interaction.followup.send(
                 f"{interaction.user.mention} was too slow, maybe next time! -w-",
                 ephemeral=True,
@@ -66,7 +66,7 @@ class CountryballNamePrompt(Modal, title=f"Catch this {settings.collectible_name
             possible_names += tuple(x.lower() for x in self.ball.model.translations.split(";"))
 
         if self.name.value.lower().strip() in possible_names:
-            self.ball.catched = True
+            self.ball.caught = True
             ball, has_caught_before = await self.catch_ball(
                 interaction.client, cast(discord.Member, interaction.user)
             )
@@ -172,7 +172,7 @@ class CatchView(View):
 
     @button(style=discord.ButtonStyle.primary, label="Take me :3")
     async def catch_button(self, interaction: discord.Interaction["BallsDexBot"], button: Button):
-        if self.ball.catched:
-            await interaction.response.send_message(f"{interaction.user.mention} was too slow, maybe next time -w-!", ephemeral=True)
+        if self.ball.caught:
+    await interaction.response.send_message("User was too slow -w-")
         else:
             await interaction.response.send_modal(CountryballNamePrompt(self.ball, button))
