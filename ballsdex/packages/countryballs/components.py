@@ -173,6 +173,6 @@ class CatchView(View):
     @button(style=discord.ButtonStyle.primary, label="Take me :3")
     async def catch_button(self, interaction: discord.Interaction["BallsDexBot"], button: Button):
         if self.ball.caught:
-            await interaction.response.send_message("User was too slow -w-")
+            await interaction.response.send_message(f"{interaction.user.mention} was too slow, maybe next time -w-!", ephemeral=True)
         else:
             await interaction.response.send_modal(CountryballNamePrompt(self.ball, button))
