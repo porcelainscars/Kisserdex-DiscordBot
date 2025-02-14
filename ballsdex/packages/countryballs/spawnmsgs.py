@@ -248,8 +248,7 @@ spawnmsglist = [
     "Bukiry will take this kisser, don’t touch it.",
     "The weather today is good. ☀️",
     "This kisser is on a kissing spree!",
-    "Is it a bird? Is it a plane?",
-    "No, it's a kisser sliding into your inventory.",
+    "Is it a bird? Is it a plane? No, it's a kisser sliding into your inventory.",
     "How much kissers could a silly kisser kiss if a silly kisser could kiss kissers?",
     "KISSERDEX IS MY LIFE",
     "What is the purpose of life? Kisserdex of course.",
@@ -419,4 +418,5 @@ spawnmsglist = [
     "Unexpected item in bagging area.",
     "Grass grows, birds fly, and brotha? I kiss people.",
     "Aww, we're so sorry to hear about your kisser that passed away. They get 5 big kisses. KISS! KISS! KISS! KISS! KIIISSSSSS!!!",
+    "This kisser pulled up in the Hulk Machine.",
 ]
