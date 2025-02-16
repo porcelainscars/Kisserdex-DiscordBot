@@ -182,7 +182,7 @@ class Boss(commands.GroupCog):
             source = string.ascii_uppercase + string.ascii_lowercase + string.ascii_letters
             return "".join(random.choices(source, k=15))
         extension = self.bossball.wild_card.split(".")[-1]
-        file_location = "./admin_panel/media/" + ball.collection_card
+        file_location = "./admin_panel/media/" + self.bossball.wild_card
         file_name = f"nt_{generate_random_name()}.{extension}"
         await interaction.followup.send(
             f"Round successfully started", ephemeral = True
@@ -219,7 +219,7 @@ class Boss(commands.GroupCog):
             source = string.ascii_uppercase + string.ascii_lowercase + string.ascii_letters
             return "".join(random.choices(source, k=15))
         extension = self.bossball.wild_card.split(".")[-1]
-        file_location = "./admin_panel/media/" + ball.collection_card
+        file_location = "./admin_panel/media/" + self.bossball.wild_card
         file_name = f"nt_{generate_random_name()}.{extension}"
         await interaction.followup.send(
             f"Round successfully started", ephemeral=True
