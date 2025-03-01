@@ -86,7 +86,8 @@ class CountryballNamePrompt(Modal, title=f"Catch this {settings.collectible_name
                     "that has been added to your completion!"
                 )
             await interaction.followup.send(
-                f"{interaction.user.mention}, **{self.ball.name}** has happily joined your collection! "
+                f"{interaction.user.mention}, **{self.ball.name}** has happily joined your "
+                "collection! "
                 f"`(#{ball.pk:0X}, {ball.attack_bonus:+}%/{ball.health_bonus:+}%)`\n\n"
                 f"{special}",
                 allowed_mentions=discord.AllowedMentions(users=player.can_be_mentioned),
@@ -95,7 +96,8 @@ class CountryballNamePrompt(Modal, title=f"Catch this {settings.collectible_name
             await interaction.followup.edit_message(self.ball.message.id, view=self.button.view)
         else:
             await interaction.followup.send(
-                f"Oops, {interaction.user.mention}! It was not ||{self.name.value}||. Try again :3",
+                f"Oops, {interaction.user.mention}! It was not ||{self.name.value}||. "
+                "Try again :3",
                 allowed_mentions=discord.AllowedMentions(users=player.can_be_mentioned),
                 ephemeral=False,
             )
@@ -106,8 +108,16 @@ class CountryballNamePrompt(Modal, title=f"Catch this {settings.collectible_name
         player, created = await Player.get_or_create(discord_id=user.id)
 
         # stat may vary by +/- 20% of base stat
-        bonus_attack = random.randint(-100, settings.max_attack_bonus)
-        bonus_health = random.randint(-100, settings.max_health_bonus)
+        bonus_attack = (
+            self.ball.atk_bonus
+            if self.ball.atk_bonus is not None
+            else random.randint(-100, settings.max_attack_bonus)
+        )
+        bonus_health = (
+            self.ball.hp_bonus
+            if self.ball.hp_bonus is not None
+            else random.randint(-100, settings.max_health_bonus)
+        )
 
         # check if we can spawn cards with a special background
         special = self.ball.special
@@ -179,6 +189,8 @@ class CatchView(View):
     @button(style=discord.ButtonStyle.primary, label="Take me :3")
     async def catch_button(self, interaction: discord.Interaction["BallsDexBot"], button: Button):
         if self.ball.caught:
-            await interaction.response.send_message(f"{interaction.user.mention} was too slow, maybe next time -w-!", ephemeral=True)
+            await interaction.response.send_message(
+                f"{interaction.user.mention} was too slow, maybe next time -w-!", ephemeral=True
+            )
         else:
             await interaction.response.send_modal(CountryballNamePrompt(self.ball, button))
