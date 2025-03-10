@@ -27,9 +27,9 @@ class CountryBallsSpawner(commands.Cog):
 
         module_path, class_name = settings.spawn_manager.rsplit(".", 1)
         module = importlib.import_module(module_path)
+        # force a reload, otherwise cog reloads won't reflect to this class
+        importlib.reload(module)
         spawn_manager = getattr(module, class_name)
-        if not issubclass(spawn_manager, BaseSpawnManager):
-            raise RuntimeError("Your custom spawn manager must inherit from BaseSpawnManager")
         self.spawn_manager = spawn_manager(bot)
 
     async def load_cache(self):
