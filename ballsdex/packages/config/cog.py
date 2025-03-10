@@ -13,15 +13,15 @@ if TYPE_CHECKING:
 
 activation_embed = discord.Embed(
     colour=0x00D936,
-    title=f"{settings.bot_name} activation",
+    title=f"{settings.bot_name} Spawn Activation",
     description=f"To enable {settings.bot_name} in your server, you must "
     f"read and accept the [Terms of Service]({settings.terms_of_service}).\n\n"
     "As a summary, these are the rules of the bot:\n"
-    f"- No farming (spamming or creating servers for {settings.plural_collectible_name})\n"
+    f"- No harassment (spamming or targeting users for their {settings.plural_collectible_name})\n"
     f"- Selling or exchanging {settings.plural_collectible_name} "
-    "against money or other goods is forbidden\n"
+    "for money or other goods is forbidden\n"
     "- Do not attempt to abuse the bot's internals\n"
-    "**Not respecting these rules will lead to a blacklist**",
+    "**Not respecting these rules will lead to a blacklist.**",
 )
 
 
