@@ -491,4 +491,5 @@ spawnmsglist = [
     "When lost, look towards the sky. Follow the north star, No matter how far!",
     "Hi Guys Kisserdex Is Hiring Artists For TranscaucasiaKisser And BajookielandKisser Spawn And Card Art We Will Pay In T1s",
     "IT'S KISSERCHU!",
+    "i hate poor people bro they're too poor and moneyless",
 ]
