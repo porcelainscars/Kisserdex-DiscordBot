@@ -576,7 +576,7 @@ spawnmsglist = [
     "This kisser is a 1/1, since it's the only one with this specific ID.",
     "*Listen to the voices...*",
     "You cannot donate to a blacklisted user.",
-    "You are blacklisted from the bot. You can appeal this blacklist in our [support server](<https://discord.gg/kissers>).,
+    "You are blacklisted from the bot. You can appeal this blacklist in our [support server](<https://discord.gg/kissers>).",
     "One small step for kisser, one giant leap for kisserkind.",
     "This kisser is part of the official countrycats lore.",
     ".gg/kissers 🔥",
