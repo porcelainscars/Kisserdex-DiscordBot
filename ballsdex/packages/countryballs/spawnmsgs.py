@@ -592,5 +592,8 @@ spawnmsglist = [
     "Tick and tock the clock is ticking... this kisser, it can not escape.",
     "This kisser has a [Pawtreon](<https://www.patreon.com/kisserdex>) membership.",
     "[Spare change?](<https://www.patreon.com/kisserdex>)",
-    "Y'all want a single? Say catch that! Catch that, catch that!",
+    "Y'all want a kisser? Say catch that! Catch that, catch that!",
+    "#yep #imevil",
+    "Xano died for Kisserdex… pay your respects to him!!!",
+    "Catch kisser or else <:boykissershoot:1157162759486717974>",
 ]
