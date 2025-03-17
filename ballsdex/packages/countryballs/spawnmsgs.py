@@ -596,4 +596,9 @@ spawnmsglist = [
     "#yep #imevil",
     "Xano died for Kisserdex… pay your respects to him!!!",
     "Catch kisser or else <:boykissershoot:1157162759486717974>",
+    "This kisser is not a kisser. ...What?",
+    "This kisser is a ditto in disguise!",
+    "THIS MAN GUCCI’D DOWN TO THE SOCKS BUT NEED $4 🤨 🤨 🤨",
+    "That'll be $4.99, please pay up.",
+    "This kisser kills AI programs.",
 ]
