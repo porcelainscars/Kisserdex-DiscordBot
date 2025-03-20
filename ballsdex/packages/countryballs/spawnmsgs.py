@@ -449,7 +449,7 @@ spawnmsglist = [
     "100 likes and I kiss this kisser, quick!",
     "<:farmer:1337601422367129660>",
     "Did you know that Doggie has 80% on... wait, wrong dex. My bad.",
-    "This kisser has come to tell you that IF YOU JOIN THE OFFICAL KISSERDEX SERVER AT .GG/KISSERS, YOU CAN PARTICIPATE IN GIVEAWAYS, SPAWN PARTIES, AND SO MUCH MORE!",
+    "This kisser has come to tell you that IF YOU JOIN THE OFFICIAL KISSERDEX SERVER AT .GG/KISSERS, YOU CAN PARTICIPATE IN GIVEAWAYS, SPAWN PARTIES, AND SO MUCH MORE!",
     "Want a break from the ads?",
     "Got any grapes?",
     "This life is amazing, when you greet it with open arms...",
