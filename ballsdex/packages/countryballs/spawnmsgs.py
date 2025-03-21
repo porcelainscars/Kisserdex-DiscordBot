@@ -583,7 +583,7 @@ spawnmsglist = [
     "The groove takes it over, we'll wait and see... We might spawn a Fabled, you and me!",
     "Pounce in fields of ice, paws bathing in the starlight.",
     "This kisser is really rare, it's not worth it to leave them behind.",
-    "-# Shhhh, catch carefully, don't wake up the eepy kisser."
+    "-# Shhhh, catch carefully, don't wake up the eepy kisser.",
     "-# scream to wake up the eepy kisser",
     "-# oh shoot the eepy kisser is awake",
     "This kisser just tried to unlock your iPhone.",
