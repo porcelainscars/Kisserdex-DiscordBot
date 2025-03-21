@@ -489,7 +489,7 @@ spawnmsglist = [
     "Roses are red, violets are blue. I am a kisser and I want to kiss you!",
     "Hellooo~! Snap out of it and catch me already!",
     "Kiss yourself!",
-    "When lost, look towards the sky. Follow the north star, No matter how far!",
+    "When lost, look towards the sky. Follow the north star, no matter how far!",
     "Hi Guys Kisserdex Is Hiring Artists For TranscaucasiaKisser And BajookielandKisser Spawn And Card Art We Will Pay In T1s",
     "IT'S KISSERCHU!",
     "i hate poor people bro they're too poor and moneyless",
