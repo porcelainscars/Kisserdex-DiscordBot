@@ -501,7 +501,7 @@ spawnmsglist = [
     "Farming? Who would ever do such a thing… *chuckles nervously*",
     "If this kisser kissed a kissillion of kissers, how many kisses has this kisser given?",
     "What if the if in the what is very what of the is? <:boykisserbonk:1180750117981147136>",
-    "Will the real slim kisser please stand up?"
+    "Will the real slim kisser please stand up?",
     "they're liberals",
     "screams",
     "<a:neon_think:1234228303540523120>",
