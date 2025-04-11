@@ -74,7 +74,7 @@ class CountryballNamePrompt(Modal, title=f"Catch this {settings.collectible_name
             )
 
             await interaction.followup.send(
-                f"{interaction.user.mention}, {self.view.get_message(ball, has_caught_before)}",
+                f"{interaction.user.mention} {self.view.get_message(ball, has_caught_before)}",
                 allowed_mentions=discord.AllowedMentions(users=player.can_be_mentioned),
             )
             await interaction.followup.edit_message(self.view.message.id, view=self.view)
