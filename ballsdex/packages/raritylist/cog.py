@@ -10,8 +10,7 @@ from discord.ext import commands
 from ballsdex.settings import settings
 from ballsdex.core.utils.paginator import FieldPageSource, Pages
 from ballsdex.settings import settings
-from ballsdex.core.models import Player, BallInstance, specials, balls 
-from ballsdex.packages.countryballs.countryball import CountryBall
+from ballsdex.core.models import Player, BallInstance, specials, balls
 from ballsdex.core.utils.transformers import (
     BallTransform,
     EconomyTransform,
