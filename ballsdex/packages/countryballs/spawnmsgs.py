@@ -1,7 +1,7 @@
 spawnmsglist = [
     "Now, I'm no doctor... but you may be *slightly* addicted to this dex.",
     "Buy $KISSER today. We promise we won’t rug pull.", 
-    "Look, A silly kisser appeared! Catch it before its silliness disappears!!! 🗣️",
+    "Look, a silly kisser appeared! Catch it before its silliness disappears!!! 🗣️",
     "I LOVE KISSERS!!!",
     "I worked hard on these messages! Just kidding... you can still catch this kisser though!",
     "This kisser is staring at you from afar.",
