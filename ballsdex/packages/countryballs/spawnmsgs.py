@@ -640,7 +640,7 @@ spawnmsglist = [
     "Don’t forget to add Kisserdex to your server. Anyways, here’s a kisser!",
     "ABSORBENT AND YELLOW AND POROUS IS HE 👹👹👹🧽🧽🧽🧽🎸🎸🎸🎸",
     "**Number 15:** Burger King Kisser Lettuce. The last thing you'd want in your Burger King Burger... is someone's **kisser** but as it turns out... **that might be what you get...**",
-    "𝓗𝓮𝓵𝓵𝓸 𝓥𝓻𝓸 🤍",
+    "Hi 🤍",
     "Ask your doctor if Zapotec is right for you!",
     "I'm walking on sunshine, woooah!",
     "INTRUDER ALERT! A KISSER SPY IS IN THE BASE!",
