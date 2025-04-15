@@ -769,4 +769,11 @@ spawnmsglist = [
     "Ba da ba ba bah, I'm kissin' it!",
     "Kissers now, think later, I do it so well...",
     "*noms at you*",
+    "Now for a million dollars, fill in the blank: THIS KISSER LIKES ..........",
+    "join the dance party! guess /e dance for the vibe ^w^",
+    "we ran out of spawn messages please sumbit some in *#spawn-and-catch-message-submissions @ .gg/kissers*",
+    "Did you know that Joe Biden is NOT playable in New Super Mario Bros. Wii?",
+    "HOLD ON TIGHT!!!! MY KISSER IS CURIOSITY 🗣️ 🔥",
+    "We don’t use AI around here.",
+    "This is DJ Kisser At Kisser FM.",
 ]
