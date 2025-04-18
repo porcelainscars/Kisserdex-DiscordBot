@@ -182,7 +182,7 @@ class Boss(commands.GroupCog):
         await interaction.followup.send(
             f"Boss successfully started", ephemeral=True
         )
-        message = await interaction.channel.send((f"# The boss battle has begun! {self.bot.get_emoji(ball.emoji_id)}\n-# HP: {self.bossHP}"),file=file,view=view)
+        message = await interaction.channel.send((f"# The Boss beckons for chaos! {self.bot.get_emoji(ball.emoji_id)}\n-# HP: {self.bossHP}"),file=file,view=view)
         view.message = message
         if ball != None:
             self.boss_enabled = True
@@ -229,7 +229,7 @@ class Boss(commands.GroupCog):
         else:
             file = discord.File(file_location, filename=file_name)
         await interaction.channel.send(
-            (f"Round {self.round}\n# {self.bossball.country} is preparing to attack! {self.bot.get_emoji(self.bossball.emoji_id)}"),file=file
+            (f"Round {self.round}\n# {self.bossball.country} is unsheathing its claws! {self.bot.get_emoji(self.bossball.emoji_id)}"),file=file
         )
         await interaction.channel.send(f"> Use `/boss select` to select your defending {settings.collectible_name}.\n> Your selected {settings.collectible_name}'s HP will be used to defend.")
         self.picking = True
@@ -266,7 +266,7 @@ class Boss(commands.GroupCog):
         else:
             file = discord.File(file_location, filename=file_name)
         await interaction.channel.send(
-            (f"Round {self.round}\n# {self.bossball.country} is preparing to defend! {self.bot.get_emoji(self.bossball.emoji_id)}"),file=file
+            (f"Round {self.round}\n# {self.bossball.country} is dashing for cover! {self.bot.get_emoji(self.bossball.emoji_id)}"),file=file
         )
         await interaction.channel.send(f"> Use `/boss select` to select your attacking {settings.collectible_name}.\n> Your selected {settings.collectible_name}'s ATK will be used to attack.")
         self.picking = True
@@ -295,11 +295,11 @@ class Boss(commands.GroupCog):
         if not self.attack:
             if int(self.bossHP) <= 0:
                 await interaction.channel.send(
-                    f"# Round {self.round} has ended {self.bot.get_emoji(self.bossball.emoji_id)}\nThere is 0 HP remaining on the boss, the boss has been defeated!",
+                    f"# Round {self.round} has ended {self.bot.get_emoji(self.bossball.emoji_id)}\nThe Boss has 0 HP remaining! Your legion emerges victorious.",
                 )
             else:
                 await interaction.channel.send(
-                    f"# Round {self.round} has ended {self.bot.get_emoji(self.bossball.emoji_id)}\nThere is {self.bossHP} HP remaining on the boss",
+                    f"# Round {self.round} has ended {self.bot.get_emoji(self.bossball.emoji_id)}\nThe Boss has {self.bossHP} HP remaining.",
                 )
         else:
             snapshotusers = self.users.copy()
@@ -313,7 +313,7 @@ class Boss(commands.GroupCog):
                 file.write(f"{self.currentvalue}")
             if len(self.users) == 0:
                 await interaction.channel.send(
-                    f"# Round {self.round} has ended {self.bot.get_emoji(self.bossball.emoji_id)}\nThe boss has dealt {self.bossattack} damage!\nThe boss has won!",
+                    f"# Round {self.round} has ended {self.bot.get_emoji(self.bossball.emoji_id)}\nThe Boss has dealt {self.bossattack} damage!\nThe Boss wins!",
                 )
             else:
                 await interaction.channel.send(
@@ -627,7 +627,7 @@ class Boss(commands.GroupCog):
             await interaction.followup.send(
                 f"Boss successfully concluded", ephemeral=True
             )
-            await interaction.channel.send(f"# Boss has concluded {self.bot.get_emoji(self.bossball.emoji_id)}\nThe boss has won the Boss Battle!")
+            await interaction.channel.send(f"# Boss has concluded {self.bot.get_emoji(self.bossball.emoji_id)}\nThe Boss wins!")
             with open("totalstats.txt", "w") as file:
                 file.write(f"{total}{total2}")
             with open("totalstats.txt", "rb") as file:
@@ -662,8 +662,8 @@ class Boss(commands.GroupCog):
                 f"Boss successfully concluded", ephemeral=True
             )
             await interaction.channel.send(
-                f"# Boss has concluded {self.bot.get_emoji(self.bossball.emoji_id)}\n<@{bosswinner}> has won the Boss Battle!\n\n"
-                f"`Boss` `{self.bossball}` {settings.collectible_name} was successfully given.\n"
+                f"# Boss has concluded {self.bot.get_emoji(self.bossball.emoji_id)}\n<@{bosswinner}> performed flawlessly!\n\n"
+                f"They have been awarded with the `Boss` `{self.bossball}`.\n"
             )
             bosswinner_user = await self.bot.fetch_user(int(bosswinner))
 
