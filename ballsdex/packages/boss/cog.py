@@ -65,9 +65,9 @@ from ballsdex.core.models import (
 
 SHINYBUFFS = [20000,20000] # Shiny Buffs
 # ATK, HP
-MAXSTATS = [200000,200000] # Max stats a card is limited to (before buffs)
+MAXSTATS = [300000,300000] # Max stats a card is limited to (before buffs)
 # ATK, HP
-DAMAGERNG = [10000,100000] # Damage a boss can deal IF attack_amount has NOT been inputted in /boss admin attack.
+DAMAGERNG = [10000,200000] # Damage a boss can deal IF attack_amount has NOT been inputted in /boss admin attack.
 # Min Damage, Max Damage
 
 LOGCHANNEL = 1320852210556604517
@@ -86,6 +86,39 @@ async def log_action(message: str, bot: BallsDexBot, console_log: bool = False):
         await channel.send(message)
     if console_log:
         log.info(message)
+
+class JoinButton(View):
+     def __init__(self, boss_cog):
+         super().__init__(timeout=900) #change this if you want
+         self.boss_cog = boss_cog
+         self.join_button = Button(label="Earn your glory!", style=discord.ButtonStyle.primary, custom_id="join_boss")
+         self.join_button.callback = self.button_callback
+         self.add_item(self.join_button)
+ 
+     async def button_callback(self, interaction: discord.Interaction):
+         await interaction.response.defer(ephemeral=True, thinking=True)
+         if not self.boss_cog.boss_enabled:
+             return await interaction.followup.send("Boss is disabled", ephemeral=True)
+         if int(interaction.user.id) in self.boss_cog.disqualified:
+             return await interaction.followup.send("You have been disqualified", ephemeral=True)
+         if [int(interaction.user.id),self.boss_cog.round] in self.boss_cog.usersinround:
+             return await interaction.followup.send("You have already joined the boss", ephemeral=True)
+         if self.boss_cog.round != 0 and interaction.user.id not in self.boss_cog.users:
+             return await interaction.followup.send(
+                 "It is too late to join the boss, or you have died", ephemeral=True
+             )
+         if interaction.user.id in self.boss_cog.users:
+             return await interaction.followup.send(
+                 "You have already joined the boss", ephemeral=True
+             )
+         self.boss_cog.users.append(interaction.user.id)
+         await interaction.followup.send(
+             "You have joined the Boss Battle!", ephemeral=True
+         )
+         await log_action(
+             f"{interaction.user} has joined the {self.boss_cog.bossball} Boss Battle.",
+             self.boss_cog.bot,
+         )
 
 @app_commands.guilds(*settings.admin_guild_ids)
 class Boss(commands.GroupCog):
@@ -142,11 +175,15 @@ class Boss(commands.GroupCog):
             file=discord.File(file_location, filename=file_name)
         else:
             file = await start_image.to_file()
+
+        # Create join button
+        view = JoinButton(self)
+            
         await interaction.followup.send(
             f"Boss successfully started", ephemeral=True
         )
-        await interaction.channel.send((f"# The boss battle has begun! {self.bot.get_emoji(ball.emoji_id)}\n-# HP: {self.bossHP}"),file=file,)
-        await interaction.channel.send("> Use `/boss join` to join the battle!")
+        message = await interaction.channel.send((f"# The boss battle has begun! {self.bot.get_emoji(ball.emoji_id)}\n-# HP: {self.bossHP}"),file=file,view=view)
+        view.message = message
         if ball != None:
             self.boss_enabled = True
             self.bossball = ball
@@ -544,7 +581,13 @@ class Boss(commands.GroupCog):
         """
         Finish the boss, conclude the Winner
         """
+        if not self.boss_enabled:
+            return await interaction.response.send_message("Boss is disabled.", ephemeral=True)
         await interaction.response.defer(ephemeral=True, thinking=True)
+        if self.lasthitter not in self.users and winner == "LAST":
+             return await interaction.followup.send(
+                 f"The last hitter is dead or disqualified.", ephemeral=True
+             )
         self.picking = False
         self.boss_enabled = False
         test = self.usersdamage
@@ -652,35 +695,6 @@ class Boss(commands.GroupCog):
         self.bosswilda = []
         self.disqualified = []
         self.lasthitter = 0
-
-    @app_commands.command()
-    async def join(self, interaction: discord.Interaction):
-        """
-        Join the boss battle!.
-        """
-        await interaction.response.defer(ephemeral=True, thinking=True)
-        if not self.boss_enabled:
-            return await interaction.followup.send("Boss is disabled", ephemeral=True)
-        if int(interaction.user.id) in self.disqualified:
-            return await interaction.followup.send("You have been disqualified", ephemeral=True)
-        if [int(interaction.user.id),self.round] in self.usersinround:
-            return await interaction.followup.send("You have already joined the boss", ephemeral=True)
-        if self.round != 0 and interaction.user.id not in self.users:
-            return await interaction.followup.send(
-                "It is too late to join the boss, or you have died", ephemeral=True
-            )
-        if interaction.user.id in self.users:
-            return await interaction.followup.send(
-                "You have already joined the boss", ephemeral=True
-            )
-        self.users.append(interaction.user.id)
-        await interaction.followup.send(
-            "You have joined the Boss Battle!", ephemeral=True
-        )
-        await log_action(
-            f"{interaction.user} has joined the `{self.bossball}` Boss Battle.",
-            self.bot,
-        )
 
     @bossadmin.command(name="hackjoin")
     @app_commands.checks.has_any_role(*settings.root_role_ids, *settings.admin_role_ids)
