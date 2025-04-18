@@ -84,12 +84,12 @@ class Collector(commands.GroupCog):
         diamond: bool | None = False
         ):
         """
-        Create the collector card for a kisser.
+        Create a collector card.
 
         Parameters
         ----------
         countryball: Ball
-            The countryball you want to obtain the collector card for.
+            The countryball for which you want to obtain the collector card.
         """
           
         if interaction.response.is_done():
