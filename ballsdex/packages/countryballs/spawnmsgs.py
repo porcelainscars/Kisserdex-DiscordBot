@@ -800,4 +800,11 @@ spawnmsglist = [
     "<:boykisserstare:1157162761692925963>",
     "Did you know? Seychelles isn't a single land mass, but rather an archipelago consisting of 115 islands scattered over 177 square miles of Indian Ocean.",
     "<:mewhenigetu:1360829892778000494><:mewhenigetu:1360829892778000494><:mewhenigetu:1360829892778000494>",
+    "cant let the boss know im playing kisserdex at work 🤫",
+    "The chances of a kisser-apocalypse are low, but never zero. Remember that.",
+    "Miss me, miss me, now you gotta kiss me! :3",
+    "This kisser's land has beautiful sights, go visit! :3",
+    "<:sclove:1227245726136795267>",
+    "My kisser ate my homework!!",
+    "You got kissed! Now you have 10 minutes to kiss somebody else or you will be kissed forever!",
 ]
