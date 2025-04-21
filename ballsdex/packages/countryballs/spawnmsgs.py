@@ -809,7 +809,7 @@ spawnmsglist = [
     "You got kissed! Now you have 10 minutes to kiss somebody else or you will be kissed forever!",
     "i put the new frogis on the jeep",
     "Dieser Küsser konnte nicht gefunden werden. Stellen Sie sicher, dass sie die autovervollständigungsfunktion für diesen befehl verwenden.",
-    "This kisser",
+    "this kisser",
     "to white name jail with you",
     "Here’s a random sentence in British: Oi mate, are you alright?",
     "Pro tip: farming is allowed now **GO AND CREATE YOUR 1722 FARMS!!!**",
