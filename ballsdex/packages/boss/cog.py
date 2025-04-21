@@ -67,7 +67,7 @@ SHINYBUFFS = [20000,20000] # Shiny Buffs
 # ATK, HP
 MAXSTATS = [300000,300000] # Max stats a card is limited to (before buffs)
 # ATK, HP
-DAMAGERNG = [10000,200000] # Damage a boss can deal IF attack_amount has NOT been inputted in /boss admin attack.
+DAMAGERNG = [10000,150000] # Damage a boss can deal IF attack_amount has NOT been inputted in /boss admin attack.
 # Min Damage, Max Damage
 
 LOGCHANNEL = 1320852210556604517
