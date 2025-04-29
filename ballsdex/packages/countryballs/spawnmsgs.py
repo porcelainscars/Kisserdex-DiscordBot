@@ -819,4 +819,11 @@ spawnmsglist = [
     "I'm boutta hit this kisser right in the kisser <:boykisserbonk:1180750117981147136>",
     "I'm now signing an executive order to put tariffs on all kissers.",
     "bwomp <:speaking_kisser:1320527175333707926>",
+    "YOU CAN KISS A HUNDRED BOYS IN BARS SHOOT ANOTHER SHOT TRY TO STOP THE FEELING",
+    "This kisser always wanted to voice Hideo Kojima in Ground Zeroes… it would have been an honor.",
+    "<:shockuador:1363522492781563904>",
+    "maybe the infinite kisser glitch has something to do with panamakisser being cut in half",
+    "silly like a sanmarinokisser",
+    "Did you know that you can use 'glkcsi' for catching GayandLesbianKingdomoftheCoralSeaIslandsKisser?",
+    "This is a test of agility. If you catch this kisser in under 2.5 seconds, you pass.",
 ]
