@@ -93,7 +93,7 @@ def update_embed(
         title=f"{settings.plural_collectible_name.title()} Battle Plan",
         description=(
             f"Add or remove {settings.plural_collectible_name} you want to propose to the other player using the "
-            "'/battle add' and '/battle remove' commands. Once you've finished, "
+            "/battle add and /battle remove commands. Once you've finished, "
             f"click the tick button to start the battle.\nMax amount: {maxallowed}"
         ),
         color=discord.Colour.blurple(),
@@ -254,7 +254,7 @@ class Battle(commands.GroupCog):
                 title=f"{settings.plural_collectible_name.title()} Battle Plan",
                 description=(
                     f"Add or remove {settings.plural_collectible_name} you want to propose to the other player using the "
-                    "'/battle add' and '/battle remove' commands. Once you've finished, "
+                    "/battle add and /battle remove commands. Once you've finished, "
                     f"click the tick button to start the battle.\nMax amount: {maxallowed}"
                 ),
                 color=discord.Colour.blurple(),
