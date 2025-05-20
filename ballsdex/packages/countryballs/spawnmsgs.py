@@ -886,4 +886,13 @@ spawnmsglist = [
     "BATH!!",
     "*Washes your kisser*",
     "You know what they say... 'All <:toast:1173081691875725372>ers <:toast:1173081691875725372> <:toast:1173081691875725372>!'",
+    "We have every country as kissers, catch them all if you dare! :3",
+    "-# *the fog is coming*",
+    "-# *the kissers are coming*",
+    "u is not paypal boa😭",
+    "WHAT DOES THE KISSER SAY?",
+    "You can now play as Luigi.",
+    "If You Catch T.s. Kisser You Get Banned L.o.l.",
+    "This kisser is my lawyer dawg im going to jail 😭 😭",
+    "This kisser supports Palestine <:boykisserbleh:1169744842855821362><:palestineheart:1374250838289154068>",
 ]
