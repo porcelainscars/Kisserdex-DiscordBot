@@ -480,10 +480,18 @@ class Boss(commands.GroupCog):
             messageforuser = f"{ball.description(short=True, include_emoji=True, bot=self.bot)} has been selected for this round, with {ballattack}+10000 ATK and {ballhealth}+10000 HP"
             ballhealth += 10000
             ballattack += 10000
+        elif "🎀" in messageforuser:
+            messageforuser = f"{ball.description(short=True, include_emoji=True, bot=self.bot)} has been selected for this round, with {ballattack}+20000 ATK and {ballhealth}+20000 HP"
+            ballhealth += 20000
+            ballattack += 20000
         elif "🦄" in messageforuser:
             messageforuser = f"{ball.description(short=True, include_emoji=True, bot=self.bot)} has been selected for this round, with {ballattack}+50000 ATK and {ballhealth}+50000 HP"
             ballhealth += 50000
             ballattack += 50000
+        elif "🪽" in messageforuser:
+            messageforuser = f"{ball.description(short=True, include_emoji=True, bot=self.bot)} has been selected for this round, with {ballattack}+75000 ATK and {ballhealth}+75000 HP"
+            ballhealth += 75000
+            ballattack += 75000
         elif "⚔️" in messageforuser:
             messageforuser = f"{ball.description(short=True, include_emoji=True, bot=self.bot)} has been selected for this round, with {ballattack}+100000 ATK and {ballhealth}+100000 HP"
             ballhealth += 100000
